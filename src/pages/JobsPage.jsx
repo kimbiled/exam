@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Header from '../components/Header'
 const JobsPage = () => {
   const [activeTab, setActiveTab] = useState("current");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -56,9 +56,7 @@ const JobsPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-100 to-blue-50 flex flex-col items-center">
       {/* Header */}
-      <header className="w-full bg-[#3E91D8] text-white text-center py-4 text-xl font-bold">
-        TELL ME WHEN
-      </header>
+      <Header />
 
       {/* Content */}
       <div className="mt-6 w-4/5">
