@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const JobsPage = () => {
@@ -14,10 +14,11 @@ const JobsPage = () => {
   const isCurrent = activeTab === "current";
   const isHistory = activeTab === "history";
 
-  const jobs = [
-    { id: 1, userId: "101", description: "Example Job 1", due: "2024-12-31" },
-    { id: 2, userId: "102", description: "Example Job 2", due: "2025-01-15" },
-  ];
+  const [jobs, setJobs] = useState(() => {
+   
+    const savedJobs = localStorage.getItem("jobs");
+    return savedJobs ? JSON.parse(savedJobs) : [];
+  });
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -28,10 +29,25 @@ const JobsPage = () => {
     setFormData({ description: "", deadline: "" });
   };
 
+  useEffect(() => {
+    localStorage.setItem("jobs", JSON.stringify(jobs));
+  }, [jobs]);
+  
   const handleConfirmModal = () => {
-    console.log("New Job Created:", formData);
+    const newJob = {
+      id: jobs.length + 1,
+      userId: Math.random().toString(36).substring(7),
+      description: formData.description,
+      due: formData.deadline,
+    };
+  
+    setJobs([...jobs, newJob]);
     setIsModalOpen(false);
+    setFormData({ description: "", deadline: "" });
+  
+    navigate("/qr-code");
   };
+  
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,24 +65,23 @@ const JobsPage = () => {
         <div className="flex justify-between items-center">
           {/* Tabs */}
           <div className="flex items-center bg-gray-200 rounded-full p-1">
-  <button
-    className={`px-4 py-2 rounded-full transition ${
-      isCurrent ? "bg-[#3E91D8] text-white" : "text-black"
-    }`}
-    onClick={() => setActiveTab("current")}
-  >
-    Current
-  </button>
-  <button
-    className={`px-4 py-2 rounded-full transition ${
-      isHistory ? "bg-[#3E91D8] text-white" : "text-black"
-    }`}
-    onClick={() => setActiveTab("history")}
-  >
-    History
-  </button>
-</div>
-
+            <button
+              className={`px-4 py-2 rounded-full transition ${
+                isCurrent ? "bg-[#3E91D8] text-white" : "text-black"
+              }`}
+              onClick={() => setActiveTab("current")}
+            >
+              Current
+            </button>
+            <button
+              className={`px-4 py-2 rounded-full transition ${
+                isHistory ? "bg-[#3E91D8] text-white" : "text-black"
+              }`}
+              onClick={() => setActiveTab("history")}
+            >
+              History
+            </button>
+          </div>
 
           {/* New Job Button */}
           <button
@@ -195,7 +210,7 @@ const JobsPage = () => {
                   onClick={handleConfirmModal}
                   className="px-4 py-2 bg-[#3E91D8] text-white rounded-lg hover:bg-blue-600 transition"
                 >
-                  Confirm
+                  Generate QR Code
                 </button>
               </div>
             </form>
